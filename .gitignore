@@ -1,0 +1,26 @@
+# Dependencies and generated builds
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Playwright authentication and generated discovery artifacts
+playwright/.auth/*
+!playwright/.auth/.gitkeep
+playwright-report/
+test-results/
+
+# Local GetCourse discovery evidence and logs
+var/*
+!var/.gitkeep
+*.log
+logs/
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
