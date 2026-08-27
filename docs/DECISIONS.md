@@ -21,3 +21,14 @@
 - ESLint flat config uses JavaScript and TypeScript recommended correctness rules only; no Prettier or stylistic plugins.
 - Vitest 4 runs one-shot unit tests under Node 24; empty integration tests succeed until Phase 1.
 - Bootstrap dependencies are limited to TypeScript 5.9, `tsx`, Node 24 types, Vitest 4, ESLint 10, `@eslint/js`, and compatible `typescript-eslint`.
+
+## Phase 1 database and configuration
+
+- The local database image is `pgvector/pgvector:pg17`; Docker Compose exposes PostgreSQL only on localhost port 5432 and uses a named volume for persistence.
+- Compose initialisation creates `getcourse_ai` for development and `getcourse_ai_test` for integration tests. Integration tests never use the development database.
+- Drizzle is the schema source of truth. Generated SQL migrations are committed under `drizzle/`; schema changes use `db:generate`, generated SQL is reviewed, and `db:migrate` is the only application path.
+- The initial migration explicitly creates `pgcrypto` for UUID defaults and `vector` for `vector(768)` plus the HNSW cosine index.
+- `src/config.ts` loads `.env` and validates configuration with Zod. Only settings required for the active database layer are required now; Gemini and GetCourse credentials remain optional until their phases.
+- `EMBEDDING_DIMENSIONS` is fixed at 768 in configuration and schema. A model-dimension change requires an explicit migration/re-embedding change in a later phase.
+- Database foreign keys use PostgreSQL's default `NO ACTION`; accidental cascading deletion is not enabled.
+- All project commands should use `corepack pnpm`, because the available global pnpm 9.7.1 cannot read the pnpm 11 workspace configuration.

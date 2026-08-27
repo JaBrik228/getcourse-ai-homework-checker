@@ -2,7 +2,7 @@
 
 ## Project goal
 
-GetCourse AI Homework Checker is a single TypeScript service that grades text homework submitted through GetCourse against relevant local course material using Gemini, storing every result and keeping mutations opt-in.
+GetCourse AI Homework Checker is a single TypeScript service that grades text homework submitted through GetCourse against relevant local course material using Gemini, stores every result, and keeps mutations opt-in.
 
 ## Current MVP scope
 
@@ -40,50 +40,50 @@ GetCourse -> submission -> lesson mapping -> retrieval -> Gemini -> stored resul
 ## Commands
 
 ```bash
-pnpm dev
-pnpm start
-pnpm build
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm test:unit
-pnpm test:integration
+corepack pnpm dev
+corepack pnpm start
+corepack pnpm build
+corepack pnpm lint
+corepack pnpm typecheck
+corepack pnpm test
+corepack pnpm test:unit
+corepack pnpm test:integration
+corepack pnpm db:generate
+corepack pnpm db:migrate
 
 # Introduced in later phases; do not add scripts before their implementation.
-pnpm db:generate
-pnpm db:migrate
-pnpm knowledge:import -- <path>
-pnpm getcourse:login
-pnpm getcourse:discover
-pnpm check:one -- <externalSubmissionId>
+corepack pnpm knowledge:import -- <path>
+corepack pnpm getcourse:login
+corepack pnpm getcourse:discover
+corepack pnpm check:one -- <externalSubmissionId>
 ```
 
 ## Phase roadmap
 
-- [ ] Phase 0 ? repository/bootstrap
-- [ ] Phase 1 ? database/config
-- [ ] Phase 2 ? knowledge ingestion
-- [ ] Phase 3 ? retrieval/context builder
-- [ ] Phase 4 ? Gemini grader
-- [ ] Phase 5 ? GetCourse login/discovery
-- [ ] Phase 6 ? GetCourse read adapter
-- [ ] Phase 7 ? end-to-end dry-run worker
-- [ ] Phase 8 ? GetCourse result application
-- [ ] Phase 9 ? hardening/tests/docs
-- [ ] Phase 10 ? MVP acceptance
+- [x] Phase 0 - repository/bootstrap
+- [x] Phase 1 - database/config
+- [ ] Phase 2 - knowledge ingestion
+- [ ] Phase 3 - retrieval/context builder
+- [ ] Phase 4 - Gemini grader
+- [ ] Phase 5 - GetCourse login/discovery
+- [ ] Phase 6 - GetCourse read adapter
+- [ ] Phase 7 - end-to-end dry-run worker
+- [ ] Phase 8 - GetCourse result application
+- [ ] Phase 9 - hardening/tests/docs
+- [ ] Phase 10 - MVP acceptance
 
 ## Current phase
 
-Phase 0 ? Bootstrap and project memory.
+Phase 2 - Knowledge ingestion.
 
 ## Last completed work
 
-Phase 0 — repository/bootstrap completed: documentation, strict ESM scaffold, tooling lockfile, smoke test, and verification.
+Phase 1 completed: Docker PostgreSQL 17 + pgvector, validated Zod configuration, Drizzle schema/migrations, connection primitives, and integration schema tests.
 
 ## Next action
 
-start database/config bootstrap
+Start the local knowledge-ingestion bootstrap: YAML validation, example course fixture, and deterministic chunker.
 
 ## Known blockers
 
-None.
+Use `corepack pnpm`: the globally installed pnpm 9.7.1 is incompatible with this repository's pnpm 11 workspace format.

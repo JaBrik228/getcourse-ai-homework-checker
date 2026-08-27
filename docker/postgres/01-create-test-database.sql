@@ -1,0 +1,1 @@
+CREATE DATABASE getcourse_ai_test;

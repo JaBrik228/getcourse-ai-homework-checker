@@ -2,12 +2,12 @@
 
 **Goal:** Build the MVP incrementally, preserving fixed architecture and dry-run safety from `docs/SPEC.md`.
 
-**Current status:** Phase 0 is complete. Current phase: Phase 1 — Database and configuration. Complete phases in order unless a concrete dependency requires a documented small adjustment.
+**Current status:** Phases 0 and 1 are complete. Current phase: Phase 2 - Knowledge ingestion. Complete phases in order unless a concrete dependency requires a documented small adjustment.
 
 ## Phase checklist
 
 - [x] Phase 0 — Bootstrap and project memory
-- [ ] Phase 1 — Database and configuration
+- [x] Phase 1 - Database and configuration
 - [ ] Phase 2 — Knowledge ingestion
 - [ ] Phase 3 — Retrieval and context builder
 - [ ] Phase 4 — Gemini grader
@@ -36,3 +36,15 @@
 - [x] Verify Corepack, frozen install, lint, typecheck, unit/integration tests, build, and compiled execution.
 - [x] Verify specification hash, ignores/trackability, and staged diff.
 - [x] Mark Phase 0 complete; make Phase 1 current; record exactly one next action; commit `chore: bootstrap project`.
+
+## Phase 1 - Database and configuration
+
+**Deliverable:** A local PostgreSQL 17 + pgvector environment, strict runtime configuration, versioned schema, and integration verification.
+
+- [x] Add Docker Compose PostgreSQL with pgvector, a healthcheck, persistent volume, and separate integration database.
+- [x] Add Zod configuration validation with safe defaults and an enforced 768 embedding dimension.
+- [x] Add Drizzle + node-postgres client and transaction primitives.
+- [x] Define all eight Phase 1 tables, foreign keys, constraints, unique keys, JSONB defaults, B-tree indexes, and the HNSW cosine vector index.
+- [x] Generate and review the initial Drizzle migration; create `pgcrypto` and `vector` extensions explicitly.
+- [x] Add unit configuration tests and real PostgreSQL migration/schema integration tests.
+- [x] Verify migrations apply repeatably to a clean local environment.
