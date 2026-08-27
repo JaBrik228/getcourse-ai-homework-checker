@@ -62,7 +62,7 @@ corepack pnpm check:one -- <externalSubmissionId>
 
 - [x] Phase 0 - repository/bootstrap
 - [x] Phase 1 - database/config
-- [ ] Phase 2 - knowledge ingestion
+- [x] Phase 2 - knowledge ingestion
 - [ ] Phase 3 - retrieval/context builder
 - [ ] Phase 4 - Gemini grader
 - [ ] Phase 5 - GetCourse login/discovery
@@ -74,15 +74,15 @@ corepack pnpm check:one -- <externalSubmissionId>
 
 ## Current phase
 
-Phase 2 - Knowledge ingestion.
+Phase 3 - Retrieval and context builder.
 
 ## Last completed work
 
-Phase 1 completed: Docker PostgreSQL 17 + pgvector, validated Zod configuration, Drizzle schema/migrations, connection primitives, and integration schema tests.
+Phase 2 completed: strict local YAML/Markdown loading, deterministic paragraph-aware chunking, Gemini embedding adapter, idempotent PostgreSQL import, and importer integration tests.
 
 ## Next action
 
-Start the local knowledge-ingestion bootstrap: YAML validation, example course fixture, and deterministic chunker.
+Start retrieval/context-builder work: scoped current-lesson and prerequisite vector retrieval with a hard context cap.
 
 ## Known blockers
 

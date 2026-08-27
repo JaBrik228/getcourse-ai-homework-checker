@@ -32,3 +32,10 @@
 - `EMBEDDING_DIMENSIONS` is fixed at 768 in configuration and schema. A model-dimension change requires an explicit migration/re-embedding change in a later phase.
 - Database foreign keys use PostgreSQL's default `NO ACTION`; accidental cascading deletion is not enabled.
 - All project commands should use `corepack pnpm`, because the available global pnpm 9.7.1 cannot read the pnpm 11 workspace configuration.
+
+## Phase 2 knowledge ingestion
+
+- Course files use strict YAML manifests: `course.yaml`, required `lesson.yaml` and `transcript.md`, plus optional `notes.md`; unknown YAML fields and unresolved/self dependencies fail before metadata is persisted.
+- Markdown is normalized to UTF-8 text with a removed BOM and LF line endings before SHA-256 hashing and chunking. The chunker is deterministic, paragraph-aware, character-based, and does not add a tokenizer dependency.
+- `GeminiEmbeddingProvider` is the only Phase 2 Gemini boundary. It uses `RETRIEVAL_DOCUMENT`, requests the configured 768 dimensions, validates every vector, and retries transient network/429/5xx responses with bounded exponential backoff.
+- Knowledge import is additive: source files or lessons absent from a later local import are retained. Changed documents are embedded before a per-document transaction replaces their chunks, so a document embedding failure leaves its prior document/chunks unchanged while later documents continue.

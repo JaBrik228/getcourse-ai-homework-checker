@@ -1,0 +1,16 @@
+﻿slug: practice
+title: Guided practice
+order: 2
+module:
+  slug: core
+  title: Core lessons
+  order: 1
+depends_on:
+  - foundations
+summary: Apply the foundation to a practical answer.
+learning_objectives:
+  - Apply the core concept to a case.
+grading_criteria:
+  - The answer includes a reasoned application.
+common_mistakes:
+  - Giving a conclusion without a reason.

@@ -1,0 +1,14 @@
+﻿slug: foundations
+title: Foundations
+order: 1
+module:
+  slug: core
+  title: Core lessons
+  order: 1
+summary: Core concepts required for the course.
+learning_objectives:
+  - Identify the core concept.
+grading_criteria:
+  - The answer uses the core concept correctly.
+common_mistakes:
+  - Naming the concept without explaining it.

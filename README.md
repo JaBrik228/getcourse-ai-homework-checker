@@ -4,7 +4,7 @@ An MVP TypeScript service that grades GetCourse text homework against local cour
 
 ## Status
 
-Phase 1 is complete: Docker PostgreSQL 17 + pgvector, validated configuration, Drizzle schema and migrations, and integration schema tests are available. Knowledge ingestion begins in Phase 2.
+Phase 2 is complete: local YAML/Markdown course import, deterministic chunking, Gemini embeddings, and idempotent PostgreSQL persistence are available. Retrieval and context building begin in Phase 3.
 
 ## Prerequisites
 
@@ -37,8 +37,18 @@ corepack pnpm test
 corepack pnpm test:integration
 corepack pnpm build
 corepack pnpm start
+corepack pnpm knowledge:import -- ./knowledge/example-course
 ```
 
 `db:generate` generates a migration from `src/db/schema.ts`; inspect the generated SQL and add any PostgreSQL extension statements before committing it. `db:migrate` only applies checked-in migrations.
 
 See `docs/SPEC.md`, `docs/IMPLEMENTATION_PLAN.md`, and `docs/DECISIONS.md`.
+## Knowledge import
+
+Create `.env` from `.env.example`, set `GEMINI_API_KEY`, start PostgreSQL, apply migrations, then run:
+
+```bash
+corepack pnpm knowledge:import -- ./knowledge/example-course
+```
+
+The importer validates the complete YAML course structure before writing metadata, imports mandatory `transcript.md` and optional `notes.md`, and only re-embeds changed documents. If an individual document cannot be embedded, its previous chunks remain intact while other documents continue importing; the command reports the error and exits non-zero.
