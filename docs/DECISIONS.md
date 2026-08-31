@@ -1,4 +1,4 @@
-# Architectural and Bootstrap Decisions
+ Architectural and Bootstrap Decisions
 
 ## Fixed MVP architecture
 
@@ -37,7 +37,7 @@
 
 - Course files use strict YAML manifests: `course.yaml`, required `lesson.yaml` and `transcript.md`, plus optional `notes.md`; unknown YAML fields and unresolved/self dependencies fail before metadata is persisted.
 - Markdown is normalized to UTF-8 text with a removed BOM and LF line endings before SHA-256 hashing and chunking. The chunker is deterministic, paragraph-aware, character-based, and does not add a tokenizer dependency.
-- `GeminiEmbeddingProvider` is the only Phase 2 Gemini boundary. It uses `RETRIEVAL_DOCUMENT`, requests the configured 768 dimensions, validates every vector, and retries transient network/429/5xx responses with bounded exponential backoff.
+- `GeminiEmbeddingProvider` is the only Phase 2 Gemini boundary. The original Phase 2 contract used `RETRIEVAL_DOCUMENT`; Phase 3 superseded that contract with prompt-formatted document and query inputs that omit `taskType`. It requests the configured 768 dimensions, validates every vector, and retries transient network/429/5xx responses with bounded exponential backoff.
 - Knowledge import is additive: source files or lessons absent from a later local import are retained. Changed documents are embedded before a per-document transaction replaces their chunks, so a document embedding failure leaves its prior document/chunks unchanged while later documents continue.
 
 ## Phase 3 retrieval and context builder

@@ -107,11 +107,11 @@ describe('GradingContextBuilder', () => {
       query,
       embeddings: embeddingProvider(),
       retrieve: vi.fn().mockResolvedValue([
-        chunk({ chunkId: 'first', content: 'abcdefghij', contentHash: 'first-hash' }),
+        chunk({ chunkId: 'first', chunkIndex: 0, content: 'abcdefghij', contentHash: 'first-hash' }),
         chunk({ chunkId: 'duplicate', content: 'different content', contentHash: 'first-hash' }),
-        chunk({ chunkId: 'overlap-one', content: 'ijKLMN', contentHash: 'overlap-one-hash' }),
-        chunk({ chunkId: 'overlap-two', content: 'KLMNop', contentHash: 'overlap-two-hash' }),
-        chunk({ chunkId: 'over-cap', content: '123456', contentHash: 'over-cap-hash' }),
+        chunk({ chunkId: 'overlap-one', chunkIndex: 1, content: 'ijKLMN', contentHash: 'overlap-one-hash' }),
+        chunk({ chunkId: 'overlap-two', chunkIndex: 2, content: 'KLMNop', contentHash: 'overlap-two-hash' }),
+        chunk({ chunkId: 'over-cap', chunkIndex: 3, content: '123456', contentHash: 'over-cap-hash' }),
       ]),
       config: { ...config, maxKnowledgeContextChars: 16 },
     });
@@ -128,6 +128,43 @@ describe('GradingContextBuilder', () => {
       expect.objectContaining({ chunkId: 'overlap-two', content: 'op' }),
     ]);
     expect(result.context.retrievedChunks.reduce((total, chunk) => total + chunk.content.length, 0)).toBe(16);
+  });
+
+  test('preserves short suffix and prefix collisions across unrelated source chunks', async () => {
+    const builder = createBuilder({
+      query: vi
+        .fn()
+        .mockResolvedValueOnce({ rows: [lessonRow()] })
+        .mockResolvedValueOnce({ rows: [] }),
+      embeddings: embeddingProvider(),
+      retrieve: vi.fn().mockResolvedValue([
+        chunk({
+          chunkId: 'first-source',
+          documentId: 'first-document',
+          chunkIndex: 6,
+          content: 'This unrelated source ends in xyz',
+          contentHash: 'first-source-hash',
+        }),
+        chunk({
+          chunkId: 'second-source',
+          documentId: 'second-document',
+          chunkIndex: 0,
+          content: 'xyz begins a separate source.',
+          contentHash: 'second-source-hash',
+        }),
+      ]),
+    });
+
+    const result = await builder.build({
+      lessonId: 'current-lesson',
+      assignmentText: 'Assignment',
+      answerText: 'Answer',
+    });
+
+    expect(result.context.retrievedChunks.map((retrievedChunk) => retrievedChunk.content)).toEqual([
+      'This unrelated source ends in xyz',
+      'xyz begins a separate source.',
+    ]);
   });
 
   test('produces the same SHA-256 hash for repeated identical contexts and changes it with the context', async () => {

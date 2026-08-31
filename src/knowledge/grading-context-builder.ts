@@ -194,8 +194,11 @@ function buildRetrievedChunks(input: {
     if (seenContentHashes.has(chunk.contentHash)) continue;
     seenContentHashes.add(chunk.contentHash);
 
-    const previousContent = selected.at(-1)?.content;
-    const content = previousContent === undefined ? chunk.content : removeBoundaryOverlap(previousContent, chunk.content);
+    const previousChunk = selected.at(-1);
+    const content =
+      previousChunk !== undefined && isAdjacentChunkFromSameDocument(previousChunk, chunk)
+        ? removeBoundaryOverlap(previousChunk.content, chunk.content)
+        : chunk.content;
     if (content.length === 0 || totalCharacters + content.length > input.maxCharacters) continue;
 
     selected.push({
@@ -214,6 +217,17 @@ function buildRetrievedChunks(input: {
   }
 
   return selected;
+}
+
+function isAdjacentChunkFromSameDocument(
+  previous: GradingContextChunk,
+  next: RetrievedKnowledgeChunk,
+): boolean {
+  return (
+    previous.lessonId === next.lessonId &&
+    previous.documentId === next.documentId &&
+    next.chunkIndex === previous.chunkIndex + 1
+  );
 }
 
 function removeBoundaryOverlap(previous: string, next: string): string {
