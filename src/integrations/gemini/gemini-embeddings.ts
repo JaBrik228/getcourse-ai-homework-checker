@@ -2,6 +2,7 @@
 
 export type EmbeddingProvider = {
   embedDocuments(input: { texts: string[]; dimensions: 768 }): Promise<number[][]>;
+  embedQuery(input: { text: string; dimensions: 768 }): Promise<number[]>;
 };
 
 export type GeminiEmbeddingClient = {
@@ -9,7 +10,7 @@ export type GeminiEmbeddingClient = {
     embedContent(input: {
       model: string;
       contents: string[];
-      config: { taskType: 'RETRIEVAL_DOCUMENT'; outputDimensionality: number };
+      config: { outputDimensionality: number };
     }): Promise<{ embeddings?: Array<{ values?: number[] }> }>;
   };
 };
@@ -53,7 +54,7 @@ export class GeminiEmbeddingProvider implements EmbeddingProvider {
 
   public async embedDocuments(input: { texts: string[]; dimensions: 768 }): Promise<number[][]> {
     if (input.texts.length === 0) return [];
-    const response = await this.embedWithRetry(input);
+    const response = await this.embedWithRetry({ ...input, texts: input.texts.map(formatDocument) });
     const embeddings = response.embeddings;
     if (embeddings === undefined || embeddings.length !== input.texts.length) {
       throw new EmbeddingResponseError('Gemini returned a different number of embeddings than requested.');
@@ -71,13 +72,29 @@ export class GeminiEmbeddingProvider implements EmbeddingProvider {
     });
   }
 
+  public async embedQuery(input: { text: string; dimensions: 768 }): Promise<number[]> {
+    const response = await this.embedWithRetry({ texts: [formatQuery(input.text)], dimensions: input.dimensions });
+    const embeddings = response.embeddings;
+    const values = embeddings?.[0]?.values;
+    if (
+      embeddings === undefined ||
+      embeddings.length !== 1 ||
+      values === undefined ||
+      values.length !== input.dimensions ||
+      values.some((value) => !Number.isFinite(value))
+    ) {
+      throw new EmbeddingResponseError('Gemini returned an invalid query embedding.');
+    }
+    return values;
+  }
+
   private async embedWithRetry(input: { texts: string[]; dimensions: 768 }): Promise<{ embeddings?: Array<{ values?: number[] }> }> {
     for (let attempt = 1; attempt <= this.maxAttempts; attempt += 1) {
       try {
         return await this.client.models.embedContent({
           model: this.model,
           contents: input.texts,
-          config: { taskType: 'RETRIEVAL_DOCUMENT', outputDimensionality: input.dimensions },
+          config: { outputDimensionality: input.dimensions },
         });
       } catch (error: unknown) {
         if (attempt === this.maxAttempts || !isTransientError(error)) throw error;
@@ -86,6 +103,14 @@ export class GeminiEmbeddingProvider implements EmbeddingProvider {
     }
     throw new Error('Unreachable retry state.');
   }
+}
+
+function formatDocument(text: string): string {
+  return `title: none | text: ${text}`;
+}
+
+function formatQuery(text: string): string {
+  return `task: search result | query: ${text}`;
 }
 
 function isTransientError(error: unknown): boolean {

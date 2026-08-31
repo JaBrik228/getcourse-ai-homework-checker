@@ -109,6 +109,10 @@ class FakeEmbeddingProvider implements EmbeddingProvider {
     this.embeddedTexts.push(...input.texts);
     return input.texts.map((text) => Array.from({ length: input.dimensions }, () => text.length));
   }
+
+  public async embedQuery(input: { text: string; dimensions: 768 }): Promise<number[]> {
+    return Array.from({ length: input.dimensions }, () => input.text.length);
+  }
 }
 
 async function createCourse(): Promise<{ rootPath: string; slug: string }> {

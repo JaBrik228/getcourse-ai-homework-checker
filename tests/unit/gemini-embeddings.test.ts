@@ -8,7 +8,7 @@ import {
 const vector = (value: number, dimensions = 768): number[] => Array.from({ length: dimensions }, () => value);
 
 describe('GeminiEmbeddingProvider', () => {
-  test('embeds every document with retrieval-document configuration', async () => {
+  test('embeds every document with the Embeddings 2 retrieval document prompt format', async () => {
     const embedContent = vi.fn().mockResolvedValue({
       embeddings: [{ values: vector(0.1) }, { values: vector(0.2) }],
     });
@@ -25,8 +25,25 @@ describe('GeminiEmbeddingProvider', () => {
     ]);
     expect(embedContent).toHaveBeenCalledWith({
       model: 'gemini-embedding-2',
-      contents: ['first', 'second'],
-      config: { taskType: 'RETRIEVAL_DOCUMENT', outputDimensionality: 768 },
+      contents: ['title: none | text: first', 'title: none | text: second'],
+      config: { outputDimensionality: 768 },
+    });
+  });
+
+  test('embeds one retrieval query with the Embeddings 2 search query prompt format', async () => {
+    const embedContent = vi.fn().mockResolvedValue({ embeddings: [{ values: vector(0.3) }] });
+    const provider = new GeminiEmbeddingProvider({
+      client: createClient(embedContent),
+      model: 'gemini-embedding-2',
+      maxAttempts: 3,
+      sleep: async () => undefined,
+    });
+
+    await expect(provider.embedQuery({ text: 'What is the task?', dimensions: 768 })).resolves.toEqual(vector(0.3));
+    expect(embedContent).toHaveBeenCalledWith({
+      model: 'gemini-embedding-2',
+      contents: ['task: search result | query: What is the task?'],
+      config: { outputDimensionality: 768 },
     });
   });
 
