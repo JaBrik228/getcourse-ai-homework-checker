@@ -2,14 +2,14 @@
 
 **Goal:** Build the MVP incrementally, preserving fixed architecture and dry-run safety from `docs/SPEC.md`.
 
-**Current status:** Phases 0, 1, and 2 are complete. Current phase: Phase 3 - Retrieval and context builder. Complete phases in order unless a concrete dependency requires a documented small adjustment.
+**Current status:** Phases 0, 1, 2, and 3 are complete. Current phase: Phase 4 - Gemini grader. Complete phases in order unless a concrete dependency requires a documented small adjustment.
 
 ## Phase checklist
 
 - [x] Phase 0 вЂ” Bootstrap and project memory
 - [x] Phase 1 - Database and configuration
 - [x] Phase 2 — Knowledge ingestion
-- [ ] Phase 3 вЂ” Retrieval and context builder
+- [x] Phase 3 - Retrieval and context builder
 - [ ] Phase 4 вЂ” Gemini grader
 - [ ] Phase 5 вЂ” GetCourse login and discovery
 - [ ] Phase 6 вЂ” GetCourse read adapter
@@ -58,3 +58,13 @@
 - [x] Upsert course metadata and prerequisites; replace changed document chunks atomically.
 - [x] Add the `knowledge:import` CLI, unit tests, and PostgreSQL importer integration tests.
 - [x] Verify unchanged documents are not re-embedded and an embedding failure preserves the prior document state.
+
+## Phase 3 - Retrieval and context builder
+
+**Deliverable:** Given an internal lesson, assignment text, and homework text, produce a bounded, deterministic GradingContext containing only current-lesson and explicitly declared prerequisite knowledge.
+
+- [x] Correct Gemini embedding compatibility: use prompt-formatted document/query inputs without taskType for gemini-embedding-2.
+- [x] Add scoped pgvector retrieval for the current lesson and its explicit prerequisites, with deterministic ordering and future lessons excluded.
+- [x] Add a grading-context builder that creates one query embedding, applies the configured character cap, and computes a stable context hash.
+- [x] Add unit and PostgreSQL integration coverage for retrieval isolation, context bounds, and deterministic context output.
+- [x] Document the operational prerequisite: clean existing stored vectors and re-import knowledge before use after the embedding-contract correction; do not reset or import databases as routine verification.

@@ -63,7 +63,7 @@ corepack pnpm check:one -- <externalSubmissionId>
 - [x] Phase 0 - repository/bootstrap
 - [x] Phase 1 - database/config
 - [x] Phase 2 - knowledge ingestion
-- [ ] Phase 3 - retrieval/context builder
+- [x] Phase 3 - retrieval/context builder
 - [ ] Phase 4 - Gemini grader
 - [ ] Phase 5 - GetCourse login/discovery
 - [ ] Phase 6 - GetCourse read adapter
@@ -74,16 +74,18 @@ corepack pnpm check:one -- <externalSubmissionId>
 
 ## Current phase
 
-Phase 3 - Retrieval and context builder.
+Phase 4 - Gemini grader.
 
 ## Last completed work
 
-Phase 2 completed: strict local YAML/Markdown loading, deterministic paragraph-aware chunking, Gemini embedding adapter, idempotent PostgreSQL import, and importer integration tests.
+Phase 3 completed: prompt-formatted Gemini document/query embeddings, lesson-scoped pgvector retrieval with explicit prerequisite access, and a deterministic bounded grading context with a context hash.
 
 ## Next action
 
-Start retrieval/context-builder work: scoped current-lesson and prerequisite vector retrieval with a hard context cap.
+Start Gemini-grader work: load and hash the editable grading prompt, request structured Gemini output, and persist the grading result.
 
 ## Known blockers
 
 Use `corepack pnpm`: the globally installed pnpm 9.7.1 is incompatible with this repository's pnpm 11 workspace format.
+
+Gemini embedding compatibility: gemini-embedding-2 requires prompt-formatted document and query embeddings without taskType. Existing stored vectors are incompatible with this contract; clean the database and re-import knowledge before operational use. Do not treat this prerequisite as a routine verification step.

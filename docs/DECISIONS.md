@@ -39,3 +39,10 @@
 - Markdown is normalized to UTF-8 text with a removed BOM and LF line endings before SHA-256 hashing and chunking. The chunker is deterministic, paragraph-aware, character-based, and does not add a tokenizer dependency.
 - `GeminiEmbeddingProvider` is the only Phase 2 Gemini boundary. It uses `RETRIEVAL_DOCUMENT`, requests the configured 768 dimensions, validates every vector, and retries transient network/429/5xx responses with bounded exponential backoff.
 - Knowledge import is additive: source files or lessons absent from a later local import are retained. Changed documents are embedded before a per-document transaction replaces their chunks, so a document embedding failure leaves its prior document/chunks unchanged while later documents continue.
+
+## Phase 3 retrieval and context builder
+
+- gemini-embedding-2 uses prompt-formatted embeddings: document and query text are formatted for their respective retrieval roles, and requests omit taskType. This replaces the earlier task-type request contract.
+- Vectors generated under the earlier embedding contract are not compatible operationally with the corrected contract. Before running retrieval against production-like knowledge, clean the database and re-import the knowledge set; this is an explicit operational migration prerequisite, not a test or automatic maintenance action.
+- Retrieval is scoped to the target lesson and its explicitly declared prerequisites. It uses pgvector cosine distance, separate configured limits for current and prerequisite material, and deterministic tie-breaking; unrelated and future lessons are excluded.
+- The context builder creates one query embedding from assignment and answer text, admits retrieved chunks only up to the configured hard character cap, and hashes canonical context JSON for auditability and idempotency.

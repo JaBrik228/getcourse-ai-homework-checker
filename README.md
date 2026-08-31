@@ -4,7 +4,7 @@ An MVP TypeScript service that grades GetCourse text homework against local cour
 
 ## Status
 
-Phase 2 is complete: local YAML/Markdown course import, deterministic chunking, Gemini embeddings, and idempotent PostgreSQL persistence are available. Retrieval and context building begin in Phase 3.
+Phase 3 is complete: lesson-scoped pgvector retrieval, explicit prerequisite retrieval, and deterministic bounded grading contexts are available. Phase 4 will add Gemini grading.
 
 ## Prerequisites
 
@@ -52,3 +52,7 @@ corepack pnpm knowledge:import -- ./knowledge/example-course
 ```
 
 The importer validates the complete YAML course structure before writing metadata, imports mandatory `transcript.md` and optional `notes.md`, and only re-embeds changed documents. If an individual document cannot be embedded, its previous chunks remain intact while other documents continue importing; the command reports the error and exits non-zero.
+
+## Embedding compatibility prerequisite
+
+gemini-embedding-2 now uses prompt-formatted document and query embeddings without taskType. If knowledge was imported with the earlier embedding contract, clean the database and re-import the knowledge before operational retrieval or grading. This is a deliberate operator action; it is not performed automatically and is not part of routine verification.
