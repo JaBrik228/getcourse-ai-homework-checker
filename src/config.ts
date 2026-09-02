@@ -53,6 +53,8 @@ const environmentSchema = z.object({
   GEMINI_THINKING_LEVEL: z
     .enum(['minimal', 'low', 'medium', 'high'])
     .default('medium'),
+  GRADING_PASS_THRESHOLD: z.coerce.number().int().min(0).max(100).default(70),
+  GRADING_PROMPT_PATH: z.string().trim().min(1).default('./prompts/grading.md'),
   GEMINI_EMBEDDING_MODEL: z
     .string()
     .trim()
@@ -93,6 +95,8 @@ export type AppConfig = {
   geminiApiKey: string | undefined;
   geminiModel: string;
   geminiThinkingLevel: z.infer<typeof environmentSchema>['GEMINI_THINKING_LEVEL'];
+  gradingPassThreshold: number;
+  gradingPromptPath: string;
   geminiEmbeddingModel: string;
   embeddingDimensions: 768;
   getcourseBaseUrl: string | undefined;
@@ -157,6 +161,8 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env): AppCon
     geminiApiKey: env.GEMINI_API_KEY,
     geminiModel: env.GEMINI_MODEL,
     geminiThinkingLevel: env.GEMINI_THINKING_LEVEL,
+    gradingPassThreshold: env.GRADING_PASS_THRESHOLD,
+    gradingPromptPath: env.GRADING_PROMPT_PATH,
     geminiEmbeddingModel: env.GEMINI_EMBEDDING_MODEL,
     embeddingDimensions: env.EMBEDDING_DIMENSIONS,
     getcourseBaseUrl: env.GETCOURSE_BASE_URL,

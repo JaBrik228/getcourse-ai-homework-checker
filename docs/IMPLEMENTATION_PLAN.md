@@ -10,7 +10,7 @@
 - [x] Phase 1 - Database and configuration
 - [x] Phase 2 — Knowledge ingestion
 - [x] Phase 3 - Retrieval and context builder
-- [ ] Phase 4 вЂ” Gemini grader
+- [x] Phase 4 - Gemini grader
 - [ ] Phase 5 вЂ” GetCourse login and discovery
 - [ ] Phase 6 вЂ” GetCourse read adapter
 - [ ] Phase 7 вЂ” End-to-end dry-run worker

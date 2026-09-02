@@ -201,6 +201,13 @@ export const checks = pgTable(
     decision: text('decision'),
     confidence: real('confidence'),
     feedback: text('feedback'),
+    score: integer('score'),
+    passed: boolean('passed'),
+    strengths: jsonb('strengths').$type<string[]>().default([]).notNull(),
+    weaknesses: jsonb('weaknesses').$type<string[]>().default([]).notNull(),
+    promptVersion: text('prompt_version'),
+    latencyMs: integer('latency_ms'),
+    usageMetadata: jsonb('usage_metadata'),
     reason: text('reason'),
     issues: jsonb('issues').$type<GradingIssue[]>().default([]).notNull(),
     rawOutput: jsonb('raw_output'),
@@ -214,6 +221,7 @@ export const checks = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
+    uniqueIndex('checks_submission_id_unique').on(table.submissionId),
     check(
       'checks_status_check',
       sql`${table.status} IN ('pending', 'running', 'completed', 'needs_review', 'apply_pending', 'applied', 'failed')`,
